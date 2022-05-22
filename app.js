@@ -2,8 +2,6 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-// formData对象接收
-// const formidable = require('express-formidable')
 var logger = require('morgan');
 var db = require('./db')
 
@@ -21,8 +19,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-// app.use(formidable())
+// app.use(express.static(path.join(__dirname, 'public')));
 // 实现静态资源访问功能
 // express.static的参数为静态资源的存放目录，建议用绝对路径
 app.use('/static',express.static(path.join(__dirname,'public')));
