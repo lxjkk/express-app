@@ -2,23 +2,31 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+// formData对象接收
+// const formidable = require('express-formidable')
 var logger = require('morgan');
 var db = require('./db')
 
 var indexRouter = require('./routes/user/index');
 var postRouter = require('./routes/user/post');
+var utilsRouter = require('./routes/utils');
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-
+console.log('!!!', __dirname);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// app.use(formidable())
+// 实现静态资源访问功能
+// express.static的参数为静态资源的存放目录，建议用绝对路径
+app.use('/static',express.static(path.join(__dirname,'public')));
+
 
 app.all("*",function(req,res,next){
   //设置允许跨域的域名，*代表允许任意域名跨域
@@ -49,6 +57,7 @@ app.use(function(req,res,next) {
 });
 app.use('/api/user', indexRouter);
 app.use('/api/post', postRouter);
+app.use('/api/utils', utilsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -52,19 +52,19 @@ router.get('/userInfo', function(req, res, next) {
 /** 编辑个人信息 **/
 router.post('/editUserInfo', function(req, res, next) {
   if (!req.body.avatar) {
-    res.send({code: 400, msg: `头像不能为空`})
+    res.json({code: 400, msg: `头像不能为空`})
     return
   } else if (!req.body.name) {
-    res.send({code: 400, msg: `名字不能为空`})
+    res.json({code: 400, msg: `用户名不能为空`})
     return
   }
   var upConfig = {
     get: {
-      id: req.userInfo.id
+      uid: req.userInfo.uid
     },
     set: req.body
   }
-  upConfig.set.token && delete upConfig.set.token
+
   db.update('users', upConfig, function(result) {
     res.json({code: 200, msg: `修改成功`})
   })

@@ -83,19 +83,21 @@ var db = {
     update: function (tab, obj, callback) {
         var param1 = ''
         var param2 = ''
+        console.log(111);
         if (obj.get && obj.set) {
             for (var keyParam1 in obj.get) {
-                param1 += ` ${keyParam1}=${db.escape(obj.get[keyParam1])} and`
+                param1 += ` ${keyParam1}=${db.escape(obj.get[keyParam1])}, `
             }
             for (var keyParam2 in obj.set) {
-                param2 += ` ${keyParam2}=${db.escape(obj.set[keyParam2])} and`
+                param2 += ` ${keyParam2}=${db.escape(obj.set[keyParam2])}, `
             }
-            param1 = param1.substr(0, param1.length - 3)
-            param2 = param2.substr(0, param2.length - 3)
+            param1 = param1.substr(0, param1.length - 2)
+            param2 = param2.substr(0, param2.length - 2)
         } else {
             throw false
         }
         var sql = `update ${tab} set ${param2} where ${param1}`
+        console.log(111,sql);
         db.pool((connection)=> {
             connection.query(sql, [param2,param1], function(err,results,fields) {
                 if (err) {
