@@ -4,17 +4,32 @@ var db = require('../../db')
 var random = require('string-random')
 
 /* 查看帖子 */
-router.post('/getPostInfo', function(req, res, next) {
-    const body = req.body
+router.get('/getPostInfo', async function(req, res, next) {
+    const body = req.query
     if (!body.id) {
         res.send({code: 400, msg: '获取帖子信息失败'})
         return
     }
+    const userInfo = req.headers['token'] && await db.token(req.headers['token'])
     db.find('posts', {id: body.id}, function(re) {
         if (re.length) {
             db.query(`update posts set read_count=read_count + 1 where id=${db.escape(body.id)}`, [], function(result,f) {
                 if (result || f) {
-                    res.send({code: 200, data: re[0]})
+                    db.query(`select id, content, title, users.uid, image, support_count, read_count, type, issue_time, users.name, users.avatar from posts LEFT JOIN users on users.uid = posts.uid where posts.id = ${body.id}`, [], function(selectRes) {
+                        const data = selectRes[0]
+                        if (userInfo) {
+                            db.query(`SELECT fid FROM support_posts where uid=${userInfo.uid};`, [], function(supportList) {
+                                const arr = []
+                                supportList.forEach(item => {
+                                    arr.push(item.fid.toString())
+                                })
+                                data.is_support = arr.includes(body.id)
+                                res.send({code: 200, data: data})
+                            })
+                        } else {
+                            res.send({code: 200, data: data})
+                        }
+                    })
                 }
             })
         } else {

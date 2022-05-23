@@ -40,7 +40,7 @@ app.all("*",function(req,res,next){
 // 拦截器
 app.use(function(req,res,next) {
   var request = req.path
-  var interceptor = ['/api/user/login', '/api/user/register', '/api/post/getPost']
+  var interceptor = ['/api/user/login', '/api/user/register', '/api/post/getPost', '/api/post/getPostInfo']
   if (interceptor.includes(request)) {
     next()
   } else {
