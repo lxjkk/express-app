@@ -80,7 +80,7 @@ router.get('/getPost', async function(req, res, next) {
     const body = req.query
     const userInfo = req.headers['token'] && await db.token(req.headers['token'])
     const def = {page: Number(body.page) || 1, limit: Number(body.limit) || 10}
-    db.query(`select * from posts LEFT JOIN users on users.uid = posts.uid limit ${(def.page -1) * def.limit},${def.limit};`, [], function(allres,indfo) {
+    db.query(`select id, content, title, users.uid, image, support_count, read_count, type, issue_time, users.name, users.avatar from posts LEFT JOIN users on users.uid = posts.uid ORDER BY posts.issue_time DESC limit ?,?;`, [(def.page -1) * def.limit, def.limit], function(allres,indfo) {
         if (allres.length) {
             db.query(`SELECT COUNT(id) as total FROM posts;`, [], function(total,info) {
                 // allres.forEach(item => delete token)
@@ -107,4 +107,42 @@ router.get('/getPost', async function(req, res, next) {
         
     })
 });
+// 获取评论
+router.get('/getComment', async function(req, res, next) {
+    const body = req.query
+    if (!body.id) {
+        res.send({code: 400, msg: '获取评论失败'})
+        return
+    }
+    const def = {page: Number(body.page) || 1, limit: Number(body.limit) || 10}
+    db.query(`SELECT sql_calc_found_rows id, content, comment.uid, create_time, users.name, users.avatar FROM comment LEFT JOIN users on users.uid = comment.uid WHERE post_id=? ORDER BY comment.create_time DESC limit ?,?;
+    select FOUND_ROWS() as total;`, [body.id, (def.page -1) * def.limit, def.limit], (arr) => {
+        const list = arr[0]
+        // list.length && arr[2].forEach(item => {
+        //     list.find((i,index) => {
+        //     if (item.reply_id == i.id) {
+        //             list[index].comment = list[index].comment ? list[index].comment.concat(item) : [item]
+        //         }
+        //     })
+        // })
+        console.log(2222222,list);
+        let commentIdList = []
+        list.forEach(item => {
+            commentIdList.push(db.query('select id, content, create_time, reply.uid, reply.comment_id, users.name, users.avatar, to_user.name as to_name, to_user.avatar as to_avater from reply LEFT JOIN users on users.uid = reply.uid LEFT JOIN users as to_user on to_user.uid = reply.to_uid where comment_id=? ORDER BY reply.create_time DESC;', [item.id]))
+        })
+        Promise.all(commentIdList).then(value => {
+            list.forEach((item,index) => {
+                item.comment = value[index]
+            })
+            const data = {
+                code: 200,
+                data: {
+                    list: list,
+                    total: arr[1][0].total
+                }
+            }
+            res.send(data)
+        })
+    })
+})
 module.exports = router;

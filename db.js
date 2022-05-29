@@ -18,15 +18,36 @@ var db = {
     query: function(sql, params, callback) {
         console.log('sql语句', sql)
         // 每次使用的时候需要创建连接
-        db.pool((connection)=> {
+        if (callback) {
+            db.pool((connection)=> {
             connection && connection.query(sql, params, function(err,results,fields) {
                 if (err) {
                     console.log('数据操作失败');
+                    if (!callback) {
+                        return Promise.reject('数据操作失败')
+                    }
                     return
                 }
-                callback && callback(results, fields && fields);
+                if (callback) {callback(results, fields && fields)}
+                else {
+                    return Promise.resolve(results)
+                } 
             })
         })
+        } else {
+            return new Promise((resolve, reject) => {
+                db.pool((connection)=> {
+                    connection && connection.query(sql, params, function(err,results,fields) {
+                        if (err) {
+                            console.log('数据操作失败');
+                            return reject('数据操作失败')
+                        }
+                        return resolve(results)
+                    })
+                })
+            })
+        }
+        
     },
     token: function (token, callback) {
         var sql = 'select * from users where token='+ mysql.escape(token)
@@ -114,6 +135,7 @@ var db = {
             return item = mysql.escape(item)
         }).toString()
         var sql = `insert into ${tab}(${param1}) value(${param2})`
+        console.log(111,sql);
         db.pool((connection)=> {
             connection.query(sql, [param2,param1], function(err,results,fields) {
                 if (err) {

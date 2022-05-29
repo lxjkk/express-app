@@ -37,6 +37,12 @@ app.all("*",function(req,res,next){
   else
     next();
 });
+function escape (opt) {
+  for (const key in opt) {
+    opt[key] = db.escape(opt[key])
+  }
+  return opt
+}
 // 拦截器
 app.use(function(req,res,next) {
   var request = req.path

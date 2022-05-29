@@ -1,7 +1,9 @@
 var express = require('express');
+var moment = require('moment')
 var router = express.Router();
 var db = require('../../db')
-var random = require('string-random')
+var random = require('string-random');
+const { log } = require('debug/src/browser');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -83,15 +85,74 @@ router.post('/post', function(req, res, next) {
   var obj = {
     title: req.body.title,
     content: req.body.content,
-    uid: req.userInfo.id,
-    issue_time: new Date().getTime()
+    uid: req.userInfo.uid,
+    issue_time: moment().format('YYYY-MM-DD hh:ss:mm')
   }
   db.insert('posts', obj, function(result) {
     if (result) {
-      res.send({code: 200, msg: `发帖成功`})
+      res.send({code: 200, data: result.insertId, msg: `发帖成功`})
       return
     }
   })
+});
+
+/** 评论帖子 **/
+router.post('/comment', async function(req, res, next) {
+  console.log(req.body);
+  if (!req.body.id) {
+    res.send({code: 400, msg: `该帖子不存在`})
+    return
+  }
+  if (!req.body.content) {
+    res.send({code: 400, msg: `请输入评论内容`})
+    return
+  }
+  var obj = {
+    post_id: req.body.id,
+    content: req.body.content,
+    uid: req.userInfo.uid,
+    create_time: moment().format('YYYY-MM-DD hh:ss:mm')
+  }
+  const r = await db.query(`select * from posts where id=?`, [obj.post_id])
+  if (r.length > 0) {
+    db.insert('comment', obj, function(result) {
+      if (result) {
+        res.send({code: 200, msg: `操作成功`})
+        return
+      }
+    })
+  } else {
+    res.send({code: 400, msg: `该帖子不存在`})
+  }
+});
+
+/** 回复评论 **/
+router.post('/reply', async function(req, res, next) {
+  console.log(req.body);
+  if (!req.body.content) {
+    res.send({code: 400, msg: `请输入回复内容`})
+    return
+  }
+  var obj = {
+    content: req.body.content,
+    uid: req.userInfo.uid,
+    create_time: moment().format('YYYY-MM-DD hh:ss:mm')
+  }
+  let r = []
+  r = req.body.id ? await db.query(`select * from reply where id=?`, [req.body.id]) : await db.query(`select * from comment where id=?`, [req.body.comment_id])
+  console.log(r);
+  if (r.length > 0) {
+    const {uid, comment_id, id} = r[0]
+    obj.to_uid = uid
+    obj.comment_id = req.body.id ? comment_id : id
+    db.insert('reply', obj, function(result) {
+      if (result) {
+        res.send({code: 200, msg: `操作成功`})
+      }
+    })
+  } else {
+    res.send({code: 400, msg: `该评论不存在`})
+  }
 });
 
 module.exports = router;

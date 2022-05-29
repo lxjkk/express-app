@@ -2,5 +2,6 @@ module.exports = {
     host     : 'localhost',
     user     : 'root',
     password : 'root',
-    database : 'lforum'
+    database : 'lforum',
+    multipleStatements: true
 }
