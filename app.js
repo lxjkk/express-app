@@ -46,15 +46,18 @@ function escape (opt) {
 // 拦截器
 app.use(function(req,res,next) {
   var request = req.path
-  var interceptor = ['/api/user/login', '/api/user/register', '/api/post/getPost', '/api/post/getPostInfo']
+  var interceptor = ['/api/user/login', '/api/user/register', '/api/post/getPost', '/api/post/getPostInfo', '/api/post/getComment']
   if (interceptor.includes(request)) {
     next()
   } else {
-      db.token(req.headers['token'], function (result) {
+    req.headers['token'] ? db.token(req.headers['token'], function (result) {
         result ? (req.userInfo=result,next()) : res.send({
           code:202,
           msg: '请先登录'
         })
+      }) : res.send({
+        code:202,
+        msg: '请先登录'
       })
   }
 });

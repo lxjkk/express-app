@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "nodemon ./bin/www",
+    "startBuild": "node ./bin/www"
   },
   "dependencies": {
     "connect-multiparty": "^2.2.0",
