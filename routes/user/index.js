@@ -17,7 +17,7 @@ router.post('/register', function(req, res, next) {
     db.query(`select * from users where email=${db.escape(body.email)}`,[],function(re, f) {
       if (!re.length) {
         db.query(`insert into users(name ,email, password) value('${random()}', ${db.escape(body.email)}, ${db.escape(body.password)})`,[],function(sue, f) {
-          res.json({code: 200, msg: '注册成功'})
+          res.json({code: 200, msg: '注册成功!'})
         })
         return
       }
