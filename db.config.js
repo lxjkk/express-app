@@ -1,7 +1,10 @@
+const env = {
+    'dev': {user: 'root', password: 'root'},
+    'pro': {user: 'lforumbb', password: 'root'}
+}
 module.exports = {
     host     : 'localhost',
-    user     : 'root',
-    password : 'root',
     database : 'lforum',
-    multipleStatements: true
+    multipleStatements: true,
+    ...env[process.env.NODE_ENV]
 }
