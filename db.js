@@ -1,7 +1,7 @@
 var mysql = require('mysql')
 var dbconfig = require('./db.config')
 var pool = mysql.createPool(dbconfig)
-
+console.log(dbconfig);
 var db = {
     escape: function(param) {
         return mysql.escape(param)

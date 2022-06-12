@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "set NODE_ENV=dev && nodemon ./bin/www --mode dev",
-    "startBuild": "set NODE_ENV=pro && node ./bin/www"
+    "start": "set NODE_ENV=dev&& nodemon ./bin/www",
+    "startBuild": "set NODE_ENV=pro&& node ./bin/www"
   },
   "dependencies": {
     "connect-multiparty": "^2.2.0",
