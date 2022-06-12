@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "set NODE_ENV=dev&& nodemon ./bin/www",
-    "startBuild": "set NODE_ENV=pro&& node ./bin/www"
+    "startBuild": "(export NODE_ENV=pro|| set NODE_ENV=pro)&& node ./bin/www"
   },
   "dependencies": {
     "connect-multiparty": "^2.2.0",
