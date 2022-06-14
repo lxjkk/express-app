@@ -80,7 +80,7 @@ router.get('/getPost', async function(req, res, next) {
     const body = req.query
     const userInfo = req.headers['token'] && await db.token(req.headers['token'])
     const def = {page: Number(body.page) || 1, limit: Number(body.limit) || 10}
-    db.query(`select id, content, title, users.uid, image, support_count, read_count, type, issue_time, users.name, users.avatar from posts LEFT JOIN users on users.uid = posts.uid ORDER BY posts.issue_time DESC limit ?,?;`, [(def.page -1) * def.limit, def.limit], function(allres,indfo) {
+    db.query(`select id, content, title, users.uid, describes, image, support_count, read_count, type, issue_time, users.name, users.avatar from posts LEFT JOIN users on users.uid = posts.uid ORDER BY posts.issue_time DESC limit ?,?;`, [(def.page -1) * def.limit, def.limit], function(allres,indfo) {
         if (allres.length) {
             db.query(`SELECT COUNT(id) as total FROM posts;`, [], function(total,info) {
                 // allres.forEach(item => delete token)

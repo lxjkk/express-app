@@ -85,6 +85,7 @@ router.post('/post', function(req, res, next) {
   var obj = {
     title: req.body.title,
     content: req.body.content,
+    describes: req.body.content.replace(/<[^<>]+>/g, "").replace(/&nbsp;/gi, ""),
     uid: req.userInfo.uid,
     issue_time: moment().format('YYYY-MM-DD hh:ss:mm')
   }
