@@ -93,7 +93,7 @@ router.post('/post', function(req, res, next) {
     image: imgeArr[0] || null,
     describes: req.body.content.replace(/<[^<>]+>/g, "").replace(/&nbsp;/gi, ""),
     uid: req.userInfo.uid,
-    issue_time: moment().format('YYYY-MM-DD hh:ss:mm')
+    issue_time: moment().format('YYYY-MM-DD HH:ss:mm')
   }
   db.insert('posts', obj, function(result) {
     if (result) {
