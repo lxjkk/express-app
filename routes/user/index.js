@@ -86,7 +86,7 @@ router.post('/post', function(req, res, next) {
   req.body.content.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/g, function (match, capture) {
     imgeArr.push(capture);
   });
-  console.log('时间', moment(new Date()).format('YYYY-MM-DD hh:ss:mm'));
+  console.log('时间', moment().format('YYYY-MM-DD HH:ss:mm'));
   var obj = {
     title: req.body.title,
     content: req.body.content,
