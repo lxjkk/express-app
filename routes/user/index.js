@@ -82,9 +82,15 @@ router.post('/post', function(req, res, next) {
     res.send({code: 400, msg: `帖子内容不能为空`})
     return
   }
+  const imgeArr = []
+  req.body.content.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/g, function (match, capture) {
+    imgeArr.push(capture);
+  });
+  console.log('时间', moment(new Date()).format('YYYY-MM-DD hh:ss:mm'));
   var obj = {
     title: req.body.title,
     content: req.body.content,
+    image: imgeArr[0] || null,
     describes: req.body.content.replace(/<[^<>]+>/g, "").replace(/&nbsp;/gi, ""),
     uid: req.userInfo.uid,
     issue_time: moment().format('YYYY-MM-DD hh:ss:mm')
