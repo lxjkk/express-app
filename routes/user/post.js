@@ -75,12 +75,13 @@ router.post('/support', function(req, res, next) {
     })
 });
 
+const sqlPost = 'select id, content, title, users.uid, describes, image, support_count, read_count, type, issue_time, users.name, users.avatar from posts LEFT JOIN users on users.uid = posts.uid '
 /* 获取帖子 */
 router.get('/getPost', async function(req, res, next) {
     const body = req.query
     const userInfo = req.headers['token'] && await db.token(req.headers['token'])
     const def = {page: Number(body.page) || 1, limit: Number(body.limit) || 10}
-    db.query(`select id, content, title, users.uid, describes, image, support_count, read_count, type, issue_time, users.name, users.avatar from posts LEFT JOIN users on users.uid = posts.uid ORDER BY posts.issue_time DESC limit ?,?;`, [(def.page -1) * def.limit, def.limit], function(allres,indfo) {
+    db.query(sqlPost + `ORDER BY posts.issue_time DESC limit ?,?;`, [(def.page -1) * def.limit, def.limit], function(allres,indfo) {
         if (allres.length) {
             db.query(`SELECT COUNT(id) as total FROM posts;`, [], function(total,info) {
                 // allres.forEach(item => delete token)
@@ -102,9 +103,34 @@ router.get('/getPost', async function(req, res, next) {
                 
             })
         } else {
-            res.send({code: 400, msg: '获取帖子列表失败'})
+            res.send({code: 200, data: {list: [],count: 0}})
         }
         
+    })
+});
+
+/* 搜素帖子 */
+router.get('/search', async function(req, res) {
+    const body = req.query
+    const searchName = `%${body.searchName}%`
+    db.query(sqlPost + 'WHERE posts.content like ? or posts.title like ? ORDER BY support_count DESC', [searchName, searchName], function(data,indfo) {
+        res.send({code: 200, data})
+    })
+});
+
+/* 获取热门帖子 */
+router.get('/getHot', async function(req, res) {
+    // 一个月前最热的帖子
+    db.query(sqlPost + `WHERE posts.issue_time>DATE_SUB(CURDATE(), INTERVAL 1 MONTH) ORDER BY support_count DESC`, [], function(data,indfo) {
+        res.send({code: 200, data})
+    })
+});
+
+/* 获取浏览最多的帖子 */
+router.get('/getRecommend', async function(req, res) {
+    // 一个月前观看最多的帖子
+    db.query(sqlPost + `WHERE posts.issue_time>DATE_SUB(CURDATE(), INTERVAL 1 MONTH) ORDER BY read_count DESC`, [], function(data,indfo) {
+        res.send({code: 200, data})
     })
 });
 // 获取评论

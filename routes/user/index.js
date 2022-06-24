@@ -3,7 +3,6 @@ var moment = require('moment')
 var router = express.Router();
 var db = require('../../db')
 var random = require('string-random');
-const { log } = require('debug/src/browser');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -95,6 +94,7 @@ router.post('/post', function(req, res, next) {
     uid: req.userInfo.uid,
     issue_time: moment().format('YYYY-MM-DD HH:ss:mm')
   }
+  console.log(obj.issue_time);
   db.insert('posts', obj, function(result) {
     if (result) {
       res.send({code: 200, data: result.insertId, msg: `发帖成功`})
