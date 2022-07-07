@@ -76,6 +76,7 @@ router.post('/support', function(req, res, next) {
 });
 
 const sqlPost = 'select id, content, title, users.uid, describes, image, support_count, read_count, type, issue_time, users.name, users.avatar from posts LEFT JOIN users on users.uid = posts.uid '
+const sqlPostList = 'select id, title from posts '
 /* 获取帖子 */
 router.get('/getPost', async function(req, res, next) {
     const body = req.query
@@ -121,7 +122,7 @@ router.get('/search', async function(req, res) {
 /* 获取热门帖子 */
 router.get('/getHot', async function(req, res) {
     // 一个月前最热的帖子
-    db.query(sqlPost + `WHERE posts.issue_time>DATE_SUB(CURDATE(), INTERVAL 1 MONTH) ORDER BY support_count DESC`, [], function(data,indfo) {
+    db.query(sqlPostList + `WHERE issue_time>DATE_SUB(CURDATE(), INTERVAL 1 MONTH) ORDER BY support_count DESC limit 0,10`, [], function(data,indfo) {
         res.send({code: 200, data})
     })
 });
@@ -129,7 +130,7 @@ router.get('/getHot', async function(req, res) {
 /* 获取浏览最多的帖子 */
 router.get('/getRecommend', async function(req, res) {
     // 一个月前观看最多的帖子
-    db.query(sqlPost + `WHERE posts.issue_time>DATE_SUB(CURDATE(), INTERVAL 1 MONTH) ORDER BY read_count DESC`, [], function(data,indfo) {
+    db.query(sqlPostList + `WHERE posts.issue_time>DATE_SUB(CURDATE(), INTERVAL 1 MONTH) ORDER BY read_count DESC limit 0,10`, [], function(data,indfo) {
         res.send({code: 200, data})
     })
 });

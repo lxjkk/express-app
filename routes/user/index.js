@@ -118,7 +118,7 @@ router.post('/comment', async function(req, res, next) {
     post_id: req.body.id,
     content: req.body.content,
     uid: req.userInfo.uid,
-    create_time: moment().format('YYYY-MM-DD hh:ss:mm')
+    create_time: moment().format('YYYY-MM-DD HH:ss:mm')
   }
   const r = await db.query(`select * from posts where id=?`, [obj.post_id])
   if (r.length > 0) {
@@ -143,7 +143,7 @@ router.post('/reply', async function(req, res, next) {
   var obj = {
     content: req.body.content,
     uid: req.userInfo.uid,
-    create_time: moment().format('YYYY-MM-DD hh:ss:mm')
+    create_time: moment().format('YYYY-MM-DD HH:ss:mm')
   }
   let r = []
   r = req.body.id ? await db.query(`select * from reply where id=?`, [req.body.id]) : await db.query(`select * from comment where id=?`, [req.body.comment_id])
