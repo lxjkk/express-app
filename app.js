@@ -46,7 +46,7 @@ function escape (opt) {
 // 拦截器
 app.use(function(req,res,next) {
   var request = req.path
-  var interceptor = ['/api/user/login', '/api/user/register', '/api/post/getPost', '/api/post/getPostInfo', '/api/post/getComment', '/api/post/search', '/api/post/getHot', '/api/post/getRecommend']
+  var interceptor = ['/api/user/login', '/api/user/auth', '/api/user/register', '/api/post/getPost', '/api/post/getPostInfo', '/api/post/getComment', '/api/post/search', '/api/post/getHot', '/api/post/getRecommend']
   if (interceptor.includes(request)) {
     next()
   } else {
